@@ -8,6 +8,7 @@ class CapturedSelection(ndb.Model):
 	checksum = ndb.StringProperty(required=True)
 	text = ndb.StringProperty(required=True)
 	datetime = ndb.DateTimeProperty(auto_now_add=True)
+	path = ndb.StringProperty()
 
 class Text(ndb.Model):
 	text = ndb.StringProperty(required=True)

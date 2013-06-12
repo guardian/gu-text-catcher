@@ -6,6 +6,8 @@ import logging
 import hashlib
 import datetime
 
+from urlparse import urlparse
+
 from urllib import quote, urlencode
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
@@ -50,11 +52,16 @@ class DetailPage(webapp2.RequestHandler):
 class CaptureHandler(webapp2.RequestHandler):
 	def post(self):
 		selection = self.request.get("selection")
+		path = self.request.get("path")
+
 		today = datetime.date.today().isoformat()
 		if selection and len(selection) <= 500:
 			sha = hashlib.sha1(selection).hexdigest()
-			selection_record = CapturedSelection(text=selection, checksum=sha)
-			selection_record.put()
+
+			if path:
+				CapturedSelection(text=selection, checksum=sha, path=path).put()
+			else:
+				CapturedSelection(text=selection, checksum=sha).put()
 
 			text_key = ndb.Key("Text", sha)
 			text_entity = text_key.get()
@@ -73,9 +80,6 @@ class CaptureHandler(webapp2.RequestHandler):
 				count.put()
 			else:
 				Summary(id=count_key_id, text=selection, checksum=sha, count=1, size=len(selection)).put()
-
-
-
 
 		headers.set_cors_headers(self.response)
 
