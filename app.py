@@ -22,13 +22,35 @@ class MainPage(webapp2.RequestHandler):
 		
 		template_values = {}
 
+		today = datetime.date.today()
+
+		all_query = Summary.query(Summary.date == today).order(-Summary.count)
+
+		template_values["all"] = all_query.iter()
+
 		self.response.out.write(template.render(template_values))
+
+class DetailPage(webapp2.RequestHandler):
+	def get(self):
+		template = jinja_environment.get_template('detail.html')
+		
+		template_values = {}
+
+		today = datetime.date.today()
+		logging.info(today)
+
+		twitter_qry = Summary.query(Summary.date == today, Summary.size <= 140).order(-Summary.size, -Summary.count)
+		longform_query = Summary.query(Summary.date == today, Summary.size > 140).order(-Summary.size, -Summary.count)
+		template_values["twitter"] = twitter_qry.iter()
+		template_values["longform"] = longform_query.iter()
+
+		self.response.out.write(template.render(template_values))
+
 
 class CaptureHandler(webapp2.RequestHandler):
 	def post(self):
 		selection = self.request.get("selection")
 		today = datetime.date.today().isoformat()
-		logging.info(today)
 		if selection and len(selection) <= 500:
 			sha = hashlib.sha1(selection).hexdigest()
 			selection_record = CapturedSelection(text=selection, checksum=sha)
@@ -58,5 +80,7 @@ class CaptureHandler(webapp2.RequestHandler):
 		headers.set_cors_headers(self.response)
 
 
-app = webapp2.WSGIApplication([('/', MainPage), ('/capture', CaptureHandler)],
+app = webapp2.WSGIApplication([('/', MainPage),
+	('/capture', CaptureHandler),
+	('/detail', DetailPage),],
                               debug=True)

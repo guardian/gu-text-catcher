@@ -1,33 +1,35 @@
 {% extends 'base.html' %}
 
-{% block title %}Simple python app example{% endblock %}
+{% block title %}Guardian Text Catcher{% endblock %}
 
 {% block content %}
 <div class="fluid-wrap">
 	<div class="fluid-row">
 		<div class="col-12">
-			<h1 class="article-heading">Simple Python app for Google Appengine</h1>
+			<h1 class="article-heading">Guardian Clippings</h1>
 
-			<blockquote>Making it easy to make simple apps</blockquote>
+			<blockquote>What the world is taking note of on the Guardian</blockquote>
 		</div>
 	</div>
 
-	<div class="fluid-row margin-top">
-		<div class="col-6">
-			<h2 class="sub-heading">What is this?</h2>
-			<p>This is a template app to provide a basic scaffold for a Python app deployed on Google App Engine.</p>
-			<p>It is meant to provide a good basis for relatively uncomplicated micro apps.</p>
-		</div>
-		<div class="col-6">
-			<h2 class="sub-heading">How do I use it?</h2>
-
-			<ol>
-				<li>Add the git repo as a remote to your project repo and pull the template into your new project.</li>
-				<li>That's it.</li>
-			</ol>
-
-
-		</div>
+	<div class="results">
+	<section class="results-all">
+		<h2>Everything</h2>
+		<table>
+			<thead>
+				<th>Count</th>
+				<th>Text</th>
+			</thead>
+			<tbody>
+				{% for summary in all %}
+				<tr>
+					<td>{{ summary.count }}</td>
+					<td>{{ summary.text }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</section>
 	</div>
 </div>
 

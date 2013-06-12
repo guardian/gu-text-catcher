@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Guardian Text Catcher{% endblock %}
+
+{% block content %}
+<div class="fluid-wrap">
+	<div class="fluid-row">
+		<div class="col-12">
+			<h1 class="article-heading">Guardian Clippings</h1>
+
+			<blockquote>What the world is taking note of on the Guardian</blockquote>
+		</div>
+	</div>
+
+	<div class="results">
+	<section class="results-box results-twitter">
+	<h2>Twitter</h2>
+	<table>
+		<thead>
+			<th>Count</th>
+			<th>Text</th>
+		</thead>
+		<tbody>
+			{% for summary in twitter %}
+			<tr>
+				<td>{{ summary.count }}</td>
+				<td>{{ summary.text }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	</section>
+	<section class="results-box results-longform">
+	<h2>Longform</h2>
+	<table>
+		<thead>
+			<th>Count</th>
+			<th>Text</th>
+		</thead>
+		<tbody>
+			{% for summary in longform %}
+			<tr>
+				<td>{{ summary.count }}</td>
+				<td>{{ summary.text }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	</section>
+	</div>
+</div>
+
+{% endblock %}
