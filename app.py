@@ -11,6 +11,7 @@ from urlparse import urlparse
 from urllib import quote, urlencode
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
+from google.appengine.api import memcache
 
 import headers
 from models import CapturedSelection, Text, Summary
@@ -21,16 +22,26 @@ jinja_environment = jinja2.Environment(
 class MainPage(webapp2.RequestHandler):
 	def get(self):
 		template = jinja_environment.get_template('index.html')
+
+		page_key = "page.results"
+
+		rendered_page = memcache.get(page_key)
+
+		if not rendered_page:
 		
-		template_values = {}
+			template_values = {}
 
-		today = datetime.date.today()
+			today = datetime.date.today()
 
-		all_query = Summary.query(Summary.date == today).order(-Summary.count)
+			all_query = Summary.query(Summary.date == today).order(-Summary.count)
 
-		template_values["all"] = all_query.iter()
+			template_values["all"] = all_query.iter()
 
-		self.response.out.write(template.render(template_values))
+			rendered_page = template.render(template_values)
+
+			memcache.add(page_key, rendered_page, 60)
+
+		self.response.out.write(rendered_page)
 
 class DetailPage(webapp2.RequestHandler):
 	def get(self):
@@ -39,7 +50,6 @@ class DetailPage(webapp2.RequestHandler):
 		template_values = {}
 
 		today = datetime.date.today()
-		logging.info(today)
 
 		twitter_qry = Summary.query(Summary.date == today, Summary.size <= 140).order(-Summary.size, -Summary.count)
 		longform_query = Summary.query(Summary.date == today, Summary.size > 140).order(-Summary.size, -Summary.count)
