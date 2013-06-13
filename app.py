@@ -5,7 +5,6 @@ import json
 import logging
 import hashlib
 import datetime
-from collections import namedtuple
 
 from urlparse import urlparse
 
@@ -17,7 +16,7 @@ from google.appengine.ext.webapp import template
 
 import headers
 from models import CapturedSelection, Text, Summary
-
+from tuples import SummaryInfo
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")),
@@ -29,8 +28,6 @@ def nice_timestamp(datetime):
 
 jinja_environment.filters['nice_timestamp'] = nice_timestamp
 
-SummaryInfo = namedtuple('SummaryInfo', ['count', 'text', 'checksum'])
-
 class MainPage(webapp2.RequestHandler):
 	def get(self):
 		template = jinja_environment.get_template('index.html')
@@ -41,7 +38,7 @@ class MainPage(webapp2.RequestHandler):
 
 		all_query = Summary.query(Summary.date == today, Summary.count > 1).order(-Summary.count)
 
-		template_values["all"] = [Summary(count=x.count, text=x.text, checksum=x.checksum) for x in all_query.iter()]
+		template_values["all"] = [SummaryInfo(count=x.count, text=x.text, checksum=x.checksum) for x in all_query.iter()]
 
 		rendered_page = template.render(template_values)
 
@@ -66,6 +63,9 @@ class DetailPage(webapp2.RequestHandler):
 class CaptureHandler(webapp2.RequestHandler):
 	def post(self):
 		selection = self.request.get("selection")
+		selection = selection.lstrip()
+		selection = selection.rstrip()
+		
 		path = self.request.get("path")
 
 		today = datetime.date.today().isoformat()
