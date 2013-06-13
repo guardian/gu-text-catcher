@@ -23,19 +23,29 @@ class AllTodayHandler(webapp2.RequestHandler):
 	def get(self):
 		headers.json(self.response)
 
-		today = datetime.date.today()
+		cache_key = "json.today"
 
-		all_query = Summary.query(Summary.date == today).order(-Summary.count)
+		json_result = memcache.get(cache_key)
 
-		def summary_as_map(summary):
-			return {"count" : x.count,
-				"text" : x.text,
-				"detail_url" : "http://gu-text-catcher.appspot.com/content/{id}".format(id=x.checksum),
-				}
+		if not json_result:
 
-		all_data = [summary_as_map(x) for x in all_query.iter()]
+			today = datetime.date.today()
 
-		self.response.out.write(json.dumps(all_data))
+			all_query = Summary.query(Summary.date == today).order(-Summary.count)
+
+			def summary_as_map(summary):
+				return {"count" : x.count,
+					"text" : x.text,
+					"detail_url" : "http://gu-text-catcher.appspot.com/content/{id}".format(id=x.checksum),
+					}
+
+			all_data = [summary_as_map(x) for x in all_query.iter()]
+
+			json_result = json.dumps(all_data)
+
+			memcache.set(cache_key, json_result, 60)
+
+		self.response.out.write(json_result)
 
 app = webapp2.WSGIApplication([('/api/all', AllTodayHandler),],
                               debug=True)

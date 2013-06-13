@@ -34,15 +34,23 @@ class MainPage(webapp2.RequestHandler):
 		
 		template_values = {}
 
+		cache_key = "today.all"
+
+		all_data = memcache.get(cache_key)
+
 		today = datetime.date.today()
 
-		all_query = Summary.query(Summary.date == today, Summary.count > 1).order(-Summary.count)
+		if not all_data:
 
-		template_values["all"] = [SummaryInfo(count=x.count, text=x.text, checksum=x.checksum) for x in all_query.iter()]
+			all_query = Summary.query(Summary.date == today, Summary.count > 1).order(-Summary.count)
 
-		rendered_page = template.render(template_values)
+			all_data = [SummaryInfo(count=x.count, text=x.text, checksum=x.checksum) for x in all_query.iter()]
 
-		self.response.out.write(rendered_page)
+			memcache.set(cache_key, all_data, 45)
+
+		template_values["all"] = all_data
+
+		self.response.out.write(template.render(template_values))
 
 class DetailPage(webapp2.RequestHandler):
 	def get(self):
@@ -65,7 +73,7 @@ class CaptureHandler(webapp2.RequestHandler):
 		selection = self.request.get("selection")
 		selection = selection.lstrip()
 		selection = selection.rstrip()
-		
+
 		path = self.request.get("path")
 
 		today = datetime.date.today().isoformat()
