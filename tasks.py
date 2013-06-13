@@ -28,7 +28,7 @@ def nice_timestamp(datetime):
 
 jinja_environment.filters['nice_timestamp'] = nice_timestamp
 
-class MainPage(webapp2.RequestHandler):
+class SummaryGenerator(webapp2.RequestHandler):
 	def get(self):
 
 		cache_key = "today.all"

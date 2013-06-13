@@ -76,7 +76,7 @@ class CaptureHandler(webapp2.RequestHandler):
 
 		today = datetime.date.today().isoformat()
 		if selection and len(selection) <= 500:
-			sha = hashlib.sha1(selection).hexdigest()
+			sha = hashlib.sha1(selection.encode('utf-8')).hexdigest()
 
 			if path:
 				CapturedSelection(text=selection, checksum=sha, path=path).put()
