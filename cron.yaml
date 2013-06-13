@@ -1,0 +1,5 @@
+
+cron:
+- description: generate today's summary
+  url: /tasks/summary
+  schedule: every 2 minutes
