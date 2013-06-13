@@ -18,6 +18,7 @@ from google.appengine.ext.webapp import template
 import headers
 from models import CapturedSelection, Text, Summary
 from tuples import SummaryInfo
+from formats import jsonp
 
 class AllTodayHandler(webapp2.RequestHandler):
 	def get(self):
@@ -45,7 +46,7 @@ class AllTodayHandler(webapp2.RequestHandler):
 
 			memcache.set(cache_key, json_result, 60)
 
-		self.response.out.write(json_result)
+		self.response.out.write(jsonp(self.request, json_result))
 
 app = webapp2.WSGIApplication([('/api/all', AllTodayHandler),],
                               debug=True)
