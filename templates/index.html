@@ -3,16 +3,11 @@
 {% block title %}Guardian Text Catcher{% endblock %}
 
 {% block content %}
-<div class="fluid-wrap">
-	<div class="fluid-row">
-		<div class="col-12">
-			<h1 class="article-heading">Guardian Clippings</h1>
+<h1 class="article-heading">Guardian Clippings</h1>
 
-			<blockquote>What the world is taking note of on the Guardian</blockquote>
-		</div>
-	</div>
+<blockquote>What the world is taking note of on the Guardian</blockquote>
 
-	<div class="results">
+<div class="results">
 	<section class="results-all">
 		<h2>Everything</h2>
 		<table>
@@ -22,15 +17,19 @@
 			</thead>
 			<tbody>
 				{% for summary in all %}
-				<tr>
-					<td>{{ summary.count }}</td>
-					<td>{{ summary.text }}</td>
+				<tr class="result">
+					<td><span class="result-count">{{ summary.count }}</span></td>
+					<td>
+						<div class="result-selected-text">
+						{{ summary.text }}
+						</div>
+						<p class="result-link-bar"><a class="result-link" href="http://www.google.com/search?q={{summary.text}}">Search Google</a> <a class="result-link" href="/content/{{summary.checksum}}">See content</a></p>
+					</td>
 				</tr>
 				{% endfor %}
 			</tbody>
 		</table>
 	</section>
-	</div>
 </div>
 
 {% endblock %}

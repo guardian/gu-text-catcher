@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Content Report{% endblock %}
+
+{% block content %}
+<h1 class="article-heading">Content Report</h1>
+
+<blockquote class="quoted-selection">{{text}}</blockquote>
+
+<p>Copied <strong>{{total_captures}}</strong> times.</p>
+
+<h2>Unique content list</h2>
+
+<ul>
+	{% for path in unique_paths %}
+	<li><a href="http://{{domain}}{{path}}">{{path}}</a></li>
+	{% endfor %}
+</ul>
+
+<h2>Full details</h2>
+
+<table class="captures-report">
+	<thead>
+		<th>Content</th>
+		<th>Captured on</th>
+	</thead>
+
+	<tbody>
+	{% for capture in captures %}
+	<tr>
+		
+		<td class="captures-report-path">
+			{% if capture.path %}
+			<a href="http://www.guardian.co.uk{{capture.path}}">{{capture.path}}</a>
+			{% else %}
+			{{capture.path}}
+			{% endif %}
+		</td>
+		<td>{{capture.datetime|nice_timestamp}}</td>
+	</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+{% endblock %}

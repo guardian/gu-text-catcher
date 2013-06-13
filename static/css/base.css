@@ -1,11 +1,49 @@
 
 body {
-			margin: 2rem;
-	}
+	margin-top: 2rem;
+	max-width: 50rem;
+	margin-left: auto;
+	margin-right: auto;
+}
 
 
 .results-box {
 	display: inline-block;
 	max-width: 30rem;
 	min-width: 25rem;
+
+}
+
+.result-count {
+	font-size: 3.5rem;
+	padding-right: 1rem;
+}
+
+.result-link-bar {
+	font-size: 0.7rem;
+	opacity: 0.5;
+}
+
+.result-link-bar:hover {
+	opacity: 1;
+}
+
+.result-selected-text {
+	padding-bottom: 0.25rem;
+}
+
+.captures-report-path {
+	padding-right: 1rem;
+}
+
+.top-nav {
+	font-size: 0.6rem;
+	margin-bottom: 0.5rem;
+	padding-bottom: 0.5rem;
+	border-bottom: solid 1px gray;
+}
+
+.quoted-selection {
+	font-size: 2rem;
+	font-family: Georgia, serif;
 }

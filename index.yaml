@@ -10,6 +10,12 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: CapturedSelection
+  properties:
+  - name: checksum
+  - name: datetime
+    direction: desc
+
 - kind: Summary
   properties:
   - name: date

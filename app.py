@@ -5,6 +5,7 @@ import json
 import logging
 import hashlib
 import datetime
+from collections import namedtuple
 
 from urlparse import urlparse
 
@@ -12,34 +13,37 @@ from urllib import quote, urlencode
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
+from google.appengine.ext.webapp import template
 
 import headers
 from models import CapturedSelection, Text, Summary
 
+
 jinja_environment = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
+    loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")),
+    autoescape=True,
+    extensions=['jinja2.ext.autoescape'])
+
+def nice_timestamp(datetime):
+	return datetime.strftime("%d/%m/%Y %H:%M:%S")
+
+jinja_environment.filters['nice_timestamp'] = nice_timestamp
+
+SummaryInfo = namedtuple('SummaryInfo', ['count', 'text', 'checksum'])
 
 class MainPage(webapp2.RequestHandler):
 	def get(self):
 		template = jinja_environment.get_template('index.html')
-
-		page_key = "page.results"
-
-		rendered_page = memcache.get(page_key)
-
-		if not rendered_page:
 		
-			template_values = {}
+		template_values = {}
 
-			today = datetime.date.today()
+		today = datetime.date.today()
 
-			all_query = Summary.query(Summary.date == today).order(-Summary.count)
+		all_query = Summary.query(Summary.date == today, Summary.count > 1).order(-Summary.count)
 
-			template_values["all"] = all_query.iter()
+		template_values["all"] = [Summary(count=x.count, text=x.text, checksum=x.checksum) for x in all_query.iter()]
 
-			rendered_page = template.render(template_values)
-
-			memcache.add(page_key, rendered_page, 60)
+		rendered_page = template.render(template_values)
 
 		self.response.out.write(rendered_page)
 
@@ -93,8 +97,26 @@ class CaptureHandler(webapp2.RequestHandler):
 
 		headers.set_cors_headers(self.response)
 
+class ContentPage(webapp2.RequestHandler):
+	def get(self, checksum):
+		template = jinja_environment.get_template('content.html')
+		
+		captures_qry = CapturedSelection.query(CapturedSelection.checksum == checksum).order(-CapturedSelection.datetime)
+
+		captures = [captures for captures in captures_qry.iter()]
+
+		template_values = {
+			"domain" : "www.guardian.co.uk",
+			"text" : ndb.Key('Text', checksum).get().text,
+			"captures" : captures,
+			"total_captures" : len(captures),
+			"unique_paths" : set([c.path for c in captures if c.path]), }
+
+		self.response.out.write(template.render(template_values))
+
 
 app = webapp2.WSGIApplication([('/', MainPage),
 	('/capture', CaptureHandler),
-	('/detail', DetailPage),],
+	('/detail', DetailPage),
+	('/content/([a-f0-9]+)', ContentPage),],
                               debug=True)
