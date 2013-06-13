@@ -46,8 +46,6 @@ class MainPage(webapp2.RequestHandler):
 
 			all_data = [SummaryInfo(count=x.count, text=x.text, checksum=x.checksum) for x in all_query.iter()]
 
-			memcache.set(cache_key, all_data, 45)
-
 		template_values["all"] = all_data
 
 		self.response.out.write(template.render(template_values))
