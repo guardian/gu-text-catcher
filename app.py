@@ -53,6 +53,8 @@ class MainPage(webapp2.RequestHandler):
 
 		template_values["all"] = all_data
 
+		headers.set_cache_headers(self.response, 60)
+
 		self.response.out.write(template.render(template_values))
 
 class DetailPage(webapp2.RequestHandler):

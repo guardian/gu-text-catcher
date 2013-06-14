@@ -19,12 +19,12 @@ body {
 	padding-right: 1rem;
 }
 
-.result-link-bar {
+.result-link-bar .result-link {
 	font-size: 0.7rem;
 	opacity: 0.5;
 }
 
-.result-link-bar:hover {
+.result-link-bar .result-link:hover {
 	opacity: 1;
 }
 

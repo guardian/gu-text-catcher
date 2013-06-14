@@ -44,7 +44,12 @@ class AllTodayHandler(webapp2.RequestHandler):
 
 			json_result = json.dumps(all_data)
 
-			memcache.set(cache_key, json_result, 60)
+			try:
+				memcache.set(cache_key, json_result, 60)
+			except:
+				pass
+
+		headers.set_cache_headers(self.response, 60)
 
 		self.response.out.write(jsonp(self.request, json_result))
 
