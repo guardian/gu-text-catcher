@@ -26,7 +26,12 @@ jinja_environment = jinja2.Environment(
 def nice_timestamp(datetime):
 	return datetime.strftime("%d/%m/%Y %H:%M:%S")
 
+CORS_HOST = "http://www.guardian.co.uk"
+
 jinja_environment.filters['nice_timestamp'] = nice_timestamp
+
+if os.environ.get('SERVER_SOFTWARE','').startswith('Development'):
+	CORS_HOST = "localhost"
 
 class MainPage(webapp2.RequestHandler):
 	def get(self):
@@ -101,7 +106,7 @@ class CaptureHandler(webapp2.RequestHandler):
 			else:
 				Summary(id=count_key_id, text=selection, checksum=sha, count=1, size=len(selection)).put()
 
-		headers.set_cors_headers(self.response)
+		headers.set_cors_headers(self.response, host=CORS_HOST)
 
 class ContentPage(webapp2.RequestHandler):
 	def get(self, checksum):
