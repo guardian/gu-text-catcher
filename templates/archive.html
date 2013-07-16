@@ -1,0 +1,13 @@
+{% extends 'base.html' %} 
+
+{% block title %}Clippings archive{% endblock %}
+
+{% block content %}
+<h1>Archive</h1>
+
+<ul>
+{% for date in dates %}
+<li><a href="{{date.link}}">{{date.label}}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

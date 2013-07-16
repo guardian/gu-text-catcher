@@ -9,6 +9,10 @@ handlers:
   static_dir: static
 - url: /api/.*
   script: api.app
+- url: /archive
+  script: archive.app
+- url: /archive/.*
+  script: archive.app
 - url: /admin/.*
   script: admin.app
   login: admin

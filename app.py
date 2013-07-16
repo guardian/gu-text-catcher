@@ -127,46 +127,8 @@ class ContentPage(webapp2.RequestHandler):
 
 		self.response.out.write(template.render(template_values))
 
-class ArchiveToday(webapp2.RequestHandler):
-	def get(self):
-		today = datetime.date.today().isoformat()
-		self.redirect('/archive/' + today)
-
-class Archive(webapp2.RequestHandler):
-	def get(self, target_date, restriction=None):
-		template = jinja_environment.get_template('index.html')
-		
-		template_values = {}
-
-		cache_key = "today." + target_date
-
-		all_data = memcache.get(cache_key)
-
-		target_day = datetime.datetime.strptime(target_date, '%Y-%m-%d').date()
-
-		if not all_data:
-
-			all_query = Summary.query(Summary.date == target_day, Summary.count > 1).order(-Summary.count)
-
-			all_data = [SummaryInfo(count=x.count, text=x.text, checksum=x.checksum) for x in all_query.iter()]
-
-			try:
-				memcache.set(cache_key, all_data, 5 * 60)
-			except:
-				pass
-
-		template_values["all"] = all_data
-
-		headers.set_cache_headers(self.response, 60)
-
-		self.response.out.write(template.render(template_values))
-
-
 app = webapp2.WSGIApplication([('/', MainPage),
 	('/capture', CaptureHandler),
 	('/detail', DetailPage),
-	('/content/([a-f0-9]+)', ContentPage),
-	('/archive/today', ArchiveToday),
-	webapp2.Route('/archive/<target_date>', handler=Archive),
-	webapp2.Route('/archive/<target_date>/<restriction>', handler=Archive),],
+	('/content/([a-f0-9]+)', ContentPage),],
                               debug=True)
