@@ -24,7 +24,7 @@
 						<div class="result-selected-text">
 						{{ summary.text }}
 						</div>
-						<p class="result-link-bar"><a class="result-link" href="http://www.google.com/search?q={{summary.text}}">Search Google</a> <a class="result-link" href="/content/{{summary.checksum}}">See content</a></p>
+						<p class="result-link-bar"><a class="result-link" href="http://www.google.com/search?q={{summary.text}}">Search Google</a> <a class="result-link" href="/content/{{summary.checksum}}">See content</a>{% if summary.length <= 140 %} <a class="result-link" href="https://twitter.com/intent/tweet?text={{summary.text}}">Tweet this</a>{% endif %}</p>
 					</td>
 				</tr>
 				{% endfor %}

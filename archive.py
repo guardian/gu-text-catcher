@@ -44,7 +44,7 @@ class Archive(webapp2.RequestHandler):
 
 			all_query = Summary.query(Summary.date == target_day, Summary.count > 1).order(-Summary.count)
 
-			all_data = [SummaryInfo(count=x.count, text=x.text, checksum=x.checksum) for x in all_query.iter()]
+			all_data = [SummaryInfo(count=x.count, text=x.text, checksum=x.checksum, length=len(x.text)) for x in all_query.iter()]
 
 			try:
 				memcache.set(cache_key, all_data, 5 * 60)
