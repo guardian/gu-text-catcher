@@ -26,7 +26,7 @@ jinja_environment = jinja2.Environment(
 def nice_timestamp(datetime):
 	return datetime.strftime("%d/%m/%Y %H:%M:%S")
 
-CORS_HOST = "http://www.guardian.co.uk"
+CORS_HOST = "http://www.theguardian.com"
 
 jinja_environment.filters['nice_timestamp'] = nice_timestamp
 
